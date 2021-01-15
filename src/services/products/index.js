@@ -25,6 +25,7 @@ const cloudinaryMulter = multer({ storage: storage })
 productsRouter.post("/", cloudinaryMulter.single("image"), async (req, res, next) => {
   try {
     const newProduct = new ProductModel(req.body);
+    newProduct.imageUrl = req.file.path
     const { _id } = await newProduct.save();
     res.status(201).send(_id);
   } catch (error) {
