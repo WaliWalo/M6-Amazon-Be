@@ -78,7 +78,7 @@ productsRouter.put("/:productId", async (req, res, next) => {
         }
       );
       if (modifiedProduct) {
-        res.send(modifiedProduct);
+        res.status(200).send(modifiedProduct);
       } else {
         next();
       }
@@ -103,7 +103,7 @@ productsRouter.delete("/:productId", async (req, res, next) => {
   try {
     const product = await ProductModel.findById(req.params.productId);
     if (product) {
-      const {_id} = await ProductModel.findByIdAndDelete(
+      const { _id } = await ProductModel.findByIdAndDelete(
         req.params.productId
       );
       if (_id) {
@@ -138,11 +138,11 @@ productsRouter.get("/:productId/reviews", async (req, res, next) => {
 
 productsRouter.post("/:productId/reviews", async (req, res, next) => {
   try {
-    const newReview = {...req.body, createdAt: new Date};
-  console.log(newReview);
+    const newReview = { ...req.body, createdAt: new Date() };
+    console.log(newReview);
     const productId = req.params.productId;
 
-    const {_id} = await ProductModel.findByIdAndUpdate(
+    const { _id } = await ProductModel.findByIdAndUpdate(
       productId,
       {
         $push: {
