@@ -4,34 +4,33 @@ const ProductModel = require("./schema");
 
 const productsRouter = express.Router();
 
-
-
-const multer = require("multer")
-const cloudinary = require("../cloudinary")
-const { CloudinaryStorage } = require("multer-storage-cloudinary")
-
-
+const multer = require("multer");
+const cloudinary = require("../cloudinary");
+const { CloudinaryStorage } = require("multer-storage-cloudinary");
 
 const storage = new CloudinaryStorage({
   cloudinary: cloudinary,
   params: {
     folder: "Strive Products",
   },
-})
-
-const cloudinaryMulter = multer({ storage: storage })
-
-
-productsRouter.post("/", cloudinaryMulter.single("image"), async (req, res, next) => {
-  try {
-    const newProduct = new ProductModel(req.body);
-    newProduct.imageUrl = req.file.path
-    const { _id } = await newProduct.save();
-    res.status(201).send(_id);
-  } catch (error) {
-    next(error);
-  }
 });
+
+const cloudinaryMulter = multer({ storage: storage });
+
+productsRouter.post(
+  "/",
+  cloudinaryMulter.single("image"),
+  async (req, res, next) => {
+    try {
+      const newProduct = new ProductModel(req.body);
+      newProduct.imageUrl = req.file.path;
+      const { _id } = await newProduct.save();
+      res.status(201).send(_id);
+    } catch (error) {
+      next(error);
+    }
+  }
+);
 
 productsRouter.get("/", async (req, res, next) => {
   try {
@@ -142,7 +141,7 @@ productsRouter.post("/:productId/reviews", async (req, res, next) => {
     const newReview = { ...req.body, createdAt: new Date() };
     console.log(newReview);
     const productId = req.params.productId;
-
+    console.log(req.body);
     const { _id } = await ProductModel.findByIdAndUpdate(
       productId,
       {
