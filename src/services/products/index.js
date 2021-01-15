@@ -4,7 +4,25 @@ const ProductModel = require("./schema");
 
 const productsRouter = express.Router();
 
-productsRouter.post("/", async (req, res, next) => {
+
+
+const multer = require("multer")
+const cloudinary = require("../cloudinary")
+const { CloudinaryStorage } = require("multer-storage-cloudinary")
+
+
+
+const storage = new CloudinaryStorage({
+  cloudinary: cloudinary,
+  params: {
+    folder: "Strive Products",
+  },
+})
+
+const cloudinaryMulter = multer({ storage: storage })
+
+
+productsRouter.post("/", cloudinaryMulter.single("image"), async (req, res, next) => {
   try {
     const newProduct = new ProductModel(req.body);
     const { _id } = await newProduct.save();
