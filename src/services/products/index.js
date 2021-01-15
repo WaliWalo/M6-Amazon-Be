@@ -1,6 +1,7 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const ProductModel = require("./schema");
+const q2m = require("query-to-mongo");
 
 const productsRouter = express.Router();
 
@@ -34,8 +35,17 @@ productsRouter.post(
 
 productsRouter.get("/", async (req, res, next) => {
   try {
-    const products = await ProductModel.find();
-    res.status(201).send(products);
+    // const products = await ProductModel.find();
+    // res.status(201).send(products);
+
+    const query = q2m(req.query);
+    const total = await ProductModel.countDocuments(query.criteria);
+    const products = await ProductModel.find(query.criteria)
+      .sort(query.options.sort)
+      .skip(query.options.skip)
+      .limit(query.options.limit);
+
+    res.status(201).send({ links: query.links("/products", total), products });
   } catch (error) {
     next(error);
   }
